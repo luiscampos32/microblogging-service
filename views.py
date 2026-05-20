@@ -38,7 +38,6 @@ def index():
         posts = p.query.order_by(p.timestamp.desc()).all()
         for post in posts:
             if post.content is not None:
-                msg = linkify(post.content)
                 msg = Markup(markdown.markdown(msg, output_format='html5'))
                 post.content = msg
         return flask.render_template('index.html', posts=posts, users=users, count=count)
@@ -54,7 +53,6 @@ def index():
 
         for post in posts:
             if post.content is not None:
-                msg = linkify(post.content)
                 msg = Markup(markdown.markdown(msg, output_format='html5'))
                 post.content = msg
         users = models.User.query.all()
@@ -68,7 +66,6 @@ def user_page(user):
     user = models.User.query.filter_by(username=user).first()
     for post in user.posts:
         if post.content is not None:
-            msg = linkify(post.content)
             msg = Markup(markdown.markdown(msg, output_format='html5'))
             post.content = msg
     return flask.render_template('user.html', user=user,
@@ -124,23 +121,3 @@ def post_photo(post_id):
 
     return flask.send_file(io.BytesIO(post.photo))
 
-
-
-def linkify(raw_message):
-    message = raw_message
-    url_re = re.compile(r"""
-       [^\s]             # not whitespace
-       [a-zA-Z0-9:/\-]+  # the protocol and domain name
-       \.(?!\.)          # A literal '.' not followed by another
-       [\w\-\./\?=&%~#]+ # country and path components
-       [^\s]             # not whitespace""", re.VERBOSE)
-    for url in url_re.findall(raw_message):
-        if url.endswith('.'):
-            url = url[:-1]
-        if 'http://' not in url:
-            href = 'http://' + url
-        else:
-            href = url
-        message = message.replace(url, '<a href="%s">%s</a>' % (href,url))
-
-    return message
