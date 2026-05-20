@@ -3,6 +3,7 @@ import bcrypt
 from init import app, db
 import models
 import re
+from sqlalchemy import text
 
 
 @app.route('/login')
@@ -16,7 +17,7 @@ def handle_login():
     username = flask.request.form['username']
     password = flask.request.form['password']
 
-    user = models.User.query.filter_by(username=username).first()
+    user = models.User.query.filter(text(f"username = '{username}'")).first()
     if user is not None:
         pw_hash = bcrypt.hashpw(password.encode('utf8'), user.pw_hash)
 
