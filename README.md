@@ -20,3 +20,6 @@ A full-stack microblogging web application built with Python, Flask, Javascript,
 - JavaScript
 - HTML
 - CSS
+- 
+# TODO
+Error that needs handling: the app code is incompatible with Flask-SQLAlchemy in the requirements.txt. DB URI is not being set since settings file is getting called afterwards. Need to update old code in models.
